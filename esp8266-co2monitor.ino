@@ -89,13 +89,13 @@ void loop() {
 
   // If the change is above a specific threshold, we update faster!
   float percentChange = abs(((float) co2Measurement / smoothCo2Measurement) - 1.0);
-    if (co2Measurement > 0) {
-      sprintf(sprintfHelper, "%d", co2Measurement);
-    }
+	if (co2Measurement > 0) {
+		sprintf(sprintfHelper, "%d", co2Measurement);
+	}
 
-    if (temperature > 0) {
-      dtostrf(temperature, 4, 2, sprintfHelper);
-    }
+	if (temperature > 0) {
+		dtostrf(temperature, 4, 2, sprintfHelper);
+	}
 
 
 }
@@ -112,20 +112,20 @@ bool decodeDataPackage(byte data[5]) {
   }
 
   switch (data[IDX_CMD]) {
-    case CMD_CO2_MEASUREMENT:
-      co2Measurement = (data[IDX_MSB] << 8) | data[IDX_LSB];
+	case CMD_CO2_MEASUREMENT:
+		co2Measurement = (data[IDX_MSB] << 8) | data[IDX_LSB];
 
-      // Exponential smoothing
-      smoothCo2Measurement = EXP_SMOOTH_ALPHA * (float) co2Measurement + (1.0 - EXP_SMOOTH_ALPHA) * smoothCo2Measurement;
+		// Exponential smoothing
+		smoothCo2Measurement = EXP_SMOOTH_ALPHA * (float) co2Measurement + (1.0 - EXP_SMOOTH_ALPHA) * smoothCo2Measurement;
 
-      Serial.print("CO2: ");
-      Serial.println(co2Measurement);
-      break;
-    case CMD_TEMPERATURE:
-      temperature = ((data[IDX_MSB] << 8) | data[IDX_LSB]) / 16.0 - 273.15;
-      Serial.print("Temp: ");
-      Serial.println(temperature);
-      break;
+		Serial.print("CO2: ");
+		Serial.println(co2Measurement);
+		break;
+	case CMD_TEMPERATURE:
+		temperature = ((data[IDX_MSB] << 8) | data[IDX_LSB]) / 16.0 - 273.15;
+		Serial.print("Temp: ");
+		Serial.println(temperature);
+		break;
   }
 
 }
