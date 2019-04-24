@@ -1,6 +1,4 @@
-#include <PubSubClient.h>
 #include <ESP8266WiFi.h>
-#include <ArduinoOTA.h>
 #include "settings.h"
 
 #define IDX_CMD 0
@@ -13,7 +11,6 @@
 #define CMD_CO2_MEASUREMENT 0x50
 
 WiFiClient wifiClient;
-PubSubClient mqttClient;
 
 uint8_t bitIndex = 0;
 uint8_t byteIndex = 0;
@@ -24,7 +21,6 @@ uint8_t tmp = 0;
 unsigned long currentMillis = 0;
 unsigned long lastMillis = 0;
 unsigned long lastUpdateMs = 0;
-uint8_t mqttRetryCounter = 0;
 
 uint16_t co2Measurement = 0;
 float smoothCo2Measurement = 0.0;
@@ -42,12 +38,8 @@ void setup() {
   delay(2000);
   
   Serial.begin(115200);
+  Serial.setTimeout(2000);
   Serial.println("Hello");
-
-  pinMode(PIN_CLK, INPUT);
-  pinMode(PIN_DATA, INPUT);
-
-  attachInterrupt(PIN_CLK, onClock, RISING);
 
   WiFi.hostname(HOSTNAME);
   WiFi.mode(WIFI_STA);
@@ -57,19 +49,13 @@ void setup() {
     Serial.print(".");
     delay(500);
   }
+  pinMode(PIN_CLK, INPUT);
+  pinMode(PIN_DATA, INPUT);
 
-  mqttClient.setClient(wifiClient);
-  mqttClient.setServer(MQTT_HOST, 1883);
-
-  ArduinoOTA.setHostname(HOSTNAME);
-  ArduinoOTA.setPassword(OTA_PASSWORD);
-  ArduinoOTA.begin();
-
-  mqttConnect();
+  attachInterrupt(PIN_CLK, onClock, RISING);
 }
 
 void onClock() {
-
   lastMillis = millis();
   bits[bitIndex++] = (digitalRead(PIN_DATA) == HIGH) ? 1 : 0;
 
@@ -90,22 +76,6 @@ void onClock() {
   }
 }
 
-void mqttConnect() {
-  while (!mqttClient.connected()) {
-    if (mqttClient.connect(HOSTNAME, MQTT_TOPIC_LAST_WILL, 1, true, "disconnected")) {
-      mqttClient.publish(MQTT_TOPIC_LAST_WILL, "connected", true);
-      mqttRetryCounter = 0;
-      
-    } else {
-            
-      if (mqttRetryCounter++ > MQTT_MAX_CONNECT_RETRY) {
-        ESP.restart();
-      }
-      
-      delay(2000);
-    }
-  }
-}
 
 void loop() {
   currentMillis = millis();
@@ -116,33 +86,18 @@ void loop() {
     byteIndex = 0;
   }
 
-  long updateInterval = PUBLISH_INTERVAL_SLOW_MS;
 
   // If the change is above a specific threshold, we update faster!
-  float percentChange = abs(((float) co2Measurement / smoothCo2Measurement) - 1.0);   
-  if (percentChange > 0.05) {
-    updateInterval = PUBLISH_INTERVAL_FAST_MS;
-  }
-
-  if (currentMillis - lastUpdateMs > updateInterval) {
-    lastUpdateMs = millis();
-
+  float percentChange = abs(((float) co2Measurement / smoothCo2Measurement) - 1.0);
     if (co2Measurement > 0) {
       sprintf(sprintfHelper, "%d", co2Measurement);
-      mqttClient.publish(MQTT_TOPIC_CO2_MEASUREMENT, sprintfHelper, true);
     }
 
     if (temperature > 0) {
       dtostrf(temperature, 4, 2, sprintfHelper);
-      mqttClient.publish(MQTT_TOPIC_TEMPERATURE_MEASUREMENT, sprintfHelper, true);
     }
 
-  }
 
-  mqttConnect();
-  mqttClient.loop();
-
-  ArduinoOTA.handle();
 }
 
 bool decodeDataPackage(byte data[5]) {
