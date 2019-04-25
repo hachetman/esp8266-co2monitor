@@ -70,9 +70,9 @@ KOqkqm57TH2H3eDJAkSnh6/DNFu0Qg==
 )EOF";
 BearSSL::X509List x509(ca_cert);
 
+// This is needed in order for the Certificate Validation to work
 void setClock() {
   configTime(3 * 3600, 0, "pool.ntp.org", "time.nist.gov");
-
   Serial.print("Waiting for NTP time sync: ");
   time_t now = time(nullptr);
   while (now < 8 * 3600 * 2) {
@@ -196,4 +196,3 @@ bool decodeDataPackage(byte data[5]) {
   }
 
 }
-
