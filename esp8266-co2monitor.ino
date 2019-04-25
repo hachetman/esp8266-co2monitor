@@ -161,7 +161,10 @@ void loop() {
 		snprintf (buff, sizeof(buff), "%d", co2Measurement);
 		mqttclient.publish(MQTT_TOPIC_CO2_MEASUREMENT, buff);
 		delay(1000);
+		ESP.deepSleep(300e6); // 20e6 is 20 seconds
+
 	}
+
 }
 
 bool decodeDataPackage(byte data[5]) {
