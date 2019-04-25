@@ -147,6 +147,7 @@ void onClock() {
 
 
 void loop() {
+	char buff[10];
   currentMillis = millis();
   // Over 50ms no bits? Reset!
   if (currentMillis - lastMillis > 50) {
@@ -155,6 +156,11 @@ void loop() {
   }
 	if (co2Measurement && temperature ) {
 		detachInterrupt(PIN_CLK);
+		snprintf (buff, sizeof(buff), "%f", temperature);
+		mqttclient.publish(MQTT_TOPIC_TEMPERATURE_MEASUREMENT, buff);
+		snprintf (buff, sizeof(buff), "%d", co2Measurement);
+		mqttclient.publish(MQTT_TOPIC_CO2_MEASUREMENT, buff);
+		delay(1000);
 	}
 }
 
