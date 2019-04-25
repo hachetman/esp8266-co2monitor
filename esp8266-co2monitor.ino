@@ -12,8 +12,6 @@
 
 #define CMD_TEMPERATURE 0x42
 #define CMD_CO2_MEASUREMENT 0x50
-#define DEBUG_SSL
-#define DEBUGV
 
 uint8_t bitIndex = 0;
 uint8_t byteIndex = 0;
@@ -94,7 +92,6 @@ void setup() {
   delay(2000);
   
   Serial.begin(115200);
-	Serial.setDebugOutput(true);	
   Serial.setTimeout(2000);
   Serial.println("Hello");
 
