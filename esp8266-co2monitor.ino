@@ -119,6 +119,9 @@ void setup() {
 		delay(30);
 		ESP.deepSleep(600e6);
 	}
+  pinMode(PIN_CLK, INPUT);
+  pinMode(PIN_DATA, INPUT);
+  attachInterrupt(PIN_CLK, onClock, RISING);
 }
 
 void onClock() {
