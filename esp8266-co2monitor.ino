@@ -102,13 +102,10 @@ void setup() {
     delay(500);
   }
   secureClient.setTrustAnchors(&x509);
-  setClock();
   Serial.println("WiFi connected");
   Serial.println("IP address: ");
   Serial.println(WiFi.localIP());
-  pinMode(PIN_CLK, INPUT);
-  pinMode(PIN_DATA, INPUT);
-	//  attachInterrupt(PIN_CLK, onClock, RISING);
+  setClock();
 	mqttclient = PubSubClient(mqtt_server, 8883, callback, secureClient);
 	success = mqttclient.connect(sensor_name, mqtt_name, mqtt_password);
 	mqttclient.publish("temperature", "absc");
