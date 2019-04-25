@@ -108,7 +108,7 @@ void setup() {
   setClock();
 	mqttclient = PubSubClient(mqtt_server, 8883, callback, secureClient);
 	success = mqttclient.connect(sensor_name, mqtt_name, mqtt_password);
-	mqttclient.publish("temperature", "absc");
+
 	if (success) {
 		Serial.println("Connected to MQTT");
 	}
