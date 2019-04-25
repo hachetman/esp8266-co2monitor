@@ -90,11 +90,9 @@ void setup() {
   int success;
   // Power up wait
   delay(2000);
-  
+
   Serial.begin(115200);
   Serial.setTimeout(2000);
-  Serial.println("Hello");
-
   WiFi.hostname(HOSTNAME);
   WiFi.mode(WIFI_STA);
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
@@ -105,7 +103,6 @@ void setup() {
   }
   secureClient.setTrustAnchors(&x509);
   setClock();
-	//secureClient.setInsecure();
   Serial.println("WiFi connected");
   Serial.println("IP address: ");
   Serial.println(WiFi.localIP());
