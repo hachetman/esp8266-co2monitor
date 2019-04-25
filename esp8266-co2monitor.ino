@@ -115,6 +115,9 @@ void setup() {
 	else {
 		Serial.print("failed, rc=");
 		Serial.println(mqttclient.state());
+		Serial.print("Going to Sleep ZZZZZ");
+		delay(30);
+		ESP.deepSleep(600e6);
 	}
 }
 
