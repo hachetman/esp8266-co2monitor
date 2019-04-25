@@ -153,6 +153,9 @@ void loop() {
     bitIndex = 0;
     byteIndex = 0;
   }
+	if (co2Measurement && temperature ) {
+		detachInterrupt(PIN_CLK);
+	}
 }
 
 bool decodeDataPackage(byte data[5]) {
